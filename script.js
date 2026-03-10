@@ -41,6 +41,8 @@ let text=document.getElementById("text").value;
 let color=document.getElementById("color").value;
 
 notes.push({title,text,color,pinned:false});
+document.getElementById("title").value="";
+document.getElementById("text").value="";
 
 saveNotes();
 displayNotes();
@@ -78,6 +80,9 @@ notes.sort((a,b)=>b.pinned-a.pinned);
 saveNotes();
 displayNotes();
 
+}
+function toggleDark(){
+document.body.classList.toggle("dark");
 }
 
 function searchNotes(){

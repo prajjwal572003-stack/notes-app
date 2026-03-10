@@ -54,7 +54,7 @@ margin:0;
 }
 
 .note button{
-background:red;
+background:rgb(210, 164, 205);
 margin-top:10px;
 }
 .pinned{
@@ -64,4 +64,19 @@ border:2px solid rgb(95, 58, 190);
 .note{
 border-radius:10px;
 padding:10px;
+}
+body.dark{
+background:#121212;
+color:white;
+}
+
+body.dark .note{
+background:#1e1e1e !important;
+color:white;
+}
+
+button{
+padding:6px 10px;
+margin:5px;
+cursor:pointer;
 }

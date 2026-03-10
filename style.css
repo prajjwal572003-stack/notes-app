@@ -57,3 +57,11 @@ margin:0;
 background:red;
 margin-top:10px;
 }
+.pinned{
+border:2px solid rgb(95, 58, 190);
+}
+
+.note{
+border-radius:10px;
+padding:10px;
+}

@@ -91,3 +91,10 @@ margin:5px 0;
 border-radius:6px;
 border:1px solid #ccc;
 }
+.note{
+cursor:grab;
+}
+
+.note:active{
+cursor:grabbing;
+}

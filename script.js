@@ -115,26 +115,32 @@ displayNotes(filtered);
 let draggedIndex = null;
 
 function dragStart(e){
-draggedIndex = e.target.dataset.index;
+draggedIndex = e.target.closest(".note").dataset.index;
 }
-
 function dragOver(e){
 e.preventDefault();
 }
 
 function dropNote(e){
 
-let targetIndex = e.target.closest(".note").dataset.index;
+e.preventDefault();
+
+let target = e.target.closest(".note");
+
+if(!target) return;
+
+let targetIndex = target.dataset.index;
 
 let temp = notes[draggedIndex];
+
 notes.splice(draggedIndex,1);
+
 notes.splice(targetIndex,0,temp);
 
 saveNotes();
 displayNotes();
 
 }
-
 function toggleDark(){
 document.body.classList.toggle("dark");
 }

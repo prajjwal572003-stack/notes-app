@@ -1,234 +1,218 @@
-let notes = [];
-
-if(localStorage.getItem("notes")){
-notes = JSON.parse(localStorage.getItem("notes"));
-}
+let notes = JSON.parse(localStorage.getItem("notes")) || [];
 
 displayNotes();
 
-function saveNotes(){
-localStorage.setItem("notes", JSON.stringify(notes));
-}
+/* ADD NOTE */
 
 function addNote(){
 
-let title=document.getElementById("title").value;
-let text=document.getElementById("text").value;
-let color=document.getElementById("color").value;
-let category=document.getElementById("category").value;
-let reminder=document.getElementById("reminder").value;
+let title = document.getElementById("title").value;
+let text = document.getElementById("text").value;
+let category = document.getElementById("category").value;
+let color = document.getElementById("color").value;
+let reminder = document.getElementById("reminder").value;
 
-notes.push({
-title:title,
-text:text,
-color:color,
-category:category,
-reminder:reminder,
-pinned:false
-});
+if(title === "" && text === ""){
+alert("Write something first!");
+return;
+}
 
-saveNotes();
-displayNotes();
+let note = {
+title,
+text,
+category,
+color,
+reminder
+};
+
+notes.push(note);
+
+localStorage.setItem("notes",JSON.stringify(notes));
 
 document.getElementById("title").value="";
 document.getElementById("text").value="";
+
+displayNotes();
+
 }
+
+
+/* DISPLAY NOTES */
 
 function displayNotes(){
 
-notes.sort((a,b)=>b.pinned-a.pinned);
-
-let container=document.getElementById("notes");
-
-container.innerHTML="";
+let notesDiv = document.getElementById("notes");
+notesDiv.innerHTML="";
 
 notes.forEach((note,index)=>{
 
-let div=document.createElement("div");
+let div = document.createElement("div");
 
 div.className="note";
-
-div.style.background=note.color || "#fff";
+div.style.background = note.color;
 
 div.setAttribute("draggable","true");
-
 div.dataset.index=index;
 
-div.addEventListener("dragstart",dragStart);
-div.addEventListener("dragover",dragOver);
-div.addEventListener("drop",dropNote);
+div.ondragstart = drag;
+div.ondragover = allowDrop;
+div.ondrop = drop;
 
-div.innerHTML=`
-
+div.innerHTML = `
 <h3>${note.title}</h3>
-<small>${note.category || "General"}</small>
 <p>${note.text}</p>
-
-<button onclick="togglePin(${index})">📌</button>
-<button onclick="editNote(${index})">Edit</button>
+<small>${note.category}</small>
+<br>
 <button onclick="deleteNote(${index})">Delete</button>
-<button onclick="shareNote(${index})">Share</button>
-
 `;
 
-container.appendChild(div);
+notesDiv.appendChild(div);
 
 });
 
-document.getElementById("noteCount").innerText="Total Notes: "+notes.length;
+document.getElementById("noteCount").innerText =
+"Total Notes: " + notes.length;
+
+checkReminders();
 
 }
+
+
+/* DELETE NOTE */
 
 function deleteNote(index){
 
 notes.splice(index,1);
 
-saveNotes();
+localStorage.setItem("notes",JSON.stringify(notes));
+
 displayNotes();
 
 }
 
-function editNote(index){
 
-let newText=prompt("Edit note:",notes[index].text);
-
-if(newText!==null){
-
-notes[index].text=newText;
-
-saveNotes();
-displayNotes();
-
-}
-
-}
-
-function togglePin(index){
-
-notes[index].pinned=!notes[index].pinned;
-
-saveNotes();
-displayNotes();
-
-}
-
-function shareNote(index){
-
-let text=notes[index].title+" - "+notes[index].text;
-
-navigator.clipboard.writeText(text);
-
-alert("Note copied to clipboard!");
-
-}
+/* SEARCH */
 
 function searchNotes(){
 
-let search=document.getElementById("search").value.toLowerCase();
+let search = document.getElementById("search").value.toLowerCase();
 
-let filtered=notes.filter(note=>
+let notesDiv = document.getElementById("notes");
 
-(note.title && note.title.toLowerCase().includes(search)) ||
-(note.text && note.text.toLowerCase().includes(search))
+let allNotes = notesDiv.getElementsByClassName("note");
 
-);
+for(let i=0;i<allNotes.length;i++){
 
-displayFilteredNotes(filtered);
+let text = allNotes[i].innerText.toLowerCase();
+
+if(text.includes(search)){
+allNotes[i].style.display="block";
+}else{
+allNotes[i].style.display="none";
+}
 
 }
 
-function displayFilteredNotes(list){
+}
 
-let container=document.getElementById("notes");
 
-container.innerHTML="";
+/* FILTER CATEGORY */
 
-list.forEach((note)=>{
+function filterNotes(){
 
-let div=document.createElement("div");
+let filter = document.getElementById("filter").value;
+
+let notesDiv = document.getElementById("notes");
+notesDiv.innerHTML="";
+
+notes.forEach((note,index)=>{
+
+if(filter === "All" || note.category === filter){
+
+let div = document.createElement("div");
 
 div.className="note";
+div.style.background = note.color;
 
-div.style.background=note.color || "#fff";
-
-div.innerHTML=`
+div.innerHTML = `
 <h3>${note.title}</h3>
-<small>${note.category}</small>
 <p>${note.text}</p>
+<small>${note.category}</small>
+<br>
+<button onclick="deleteNote(${index})">Delete</button>
 `;
 
-container.appendChild(div);
+notesDiv.appendChild(div);
+
+}
 
 });
 
 }
 
-let draggedIndex=null;
 
-function dragStart(e){
+/* DARK MODE */
 
-draggedIndex=e.target.closest(".note").dataset.index;
+function toggleDark(){
 
-}
-
-function dragOver(e){
-
-e.preventDefault();
+document.body.classList.toggle("dark");
 
 }
 
-function dropNote(e){
 
-e.preventDefault();
+/* REMINDER */
 
-let target=e.target.closest(".note");
+function checkReminders(){
 
-if(!target) return;
+let now = new Date().toISOString().slice(0,16);
 
-let targetIndex=target.dataset.index;
+notes.forEach(note=>{
 
-let temp=notes[draggedIndex];
+if(note.reminder && note.reminder === now){
 
-notes.splice(draggedIndex,1);
-
-notes.splice(targetIndex,0,temp);
-
-saveNotes();
-displayNotes();
+alert("Reminder: " + note.title);
 
 }
+
+});
+
+}
+
+
+/* BACKUP */
 
 function backupNotes(){
 
-let data=JSON.stringify(notes);
+let data = JSON.stringify(notes);
 
-let blob=new Blob([data],{type:"application/json"});
+let blob = new Blob([data],{type:"application/json"});
 
-let url=URL.createObjectURL(blob);
+let url = URL.createObjectURL(blob);
 
-let a=document.createElement("a");
+let a = document.createElement("a");
 
-a.href=url;
+a.href = url;
 
-a.download="notes-backup.json";
+a.download = "notes-backup.json";
 
 a.click();
 
 }
 
+
+/* RESTORE */
+
 function restoreNotes(){
 
-let file=document.getElementById("restoreFile").files[0];
+let file = document.getElementById("restoreFile").files[0];
 
-if(!file) return;
+let reader = new FileReader();
 
-let reader=new FileReader();
+reader.onload = function(){
 
-reader.onload=function(e){
+notes = JSON.parse(reader.result);
 
-notes=JSON.parse(e.target.result);
-
-saveNotes();
+localStorage.setItem("notes",JSON.stringify(notes));
 
 displayNotes();
 
@@ -238,40 +222,92 @@ reader.readAsText(file);
 
 }
 
-if(Notification.permission!=="granted"){
-Notification.requestPermission();
-}
 
-function checkReminders(){
+/* EXPORT PDF */
 
-let now=new Date().getTime();
+function exportPDF(){
+
+const { jsPDF } = window.jspdf;
+
+let doc = new jsPDF();
+
+let y = 10;
 
 notes.forEach(note=>{
 
-if(note.reminder){
+doc.text(note.title + " : " + note.text,10,y);
 
-let reminderTime=new Date(note.reminder).getTime();
-
-if(reminderTime<=now){
-
-new Notification("Reminder: "+note.title);
-
-note.reminder="";
-
-saveNotes();
-
-}
-
-}
+y += 10;
 
 });
 
+doc.save("notes.pdf");
+
 }
+
+
+/* VOICE INPUT */
+
+function startVoice(){
+
+let recognition = new webkitSpeechRecognition();
+
+recognition.lang="en-US";
+
+recognition.onresult=function(event){
+
+document.getElementById("text").value =
+event.results[0][0].transcript;
+
+};
+
+recognition.start();
+
+}
+
+
+/* SCROLL TOP */
+
 function scrollToTop(){
+
 window.scrollTo({
 top:0,
 behavior:"smooth"
 });
+
 }
 
-setInterval(checkReminders,10000);
+
+/* DRAG DROP */
+
+let dragIndex;
+
+function drag(event){
+
+dragIndex = event.target.dataset.index;
+
+}
+
+function allowDrop(event){
+
+event.preventDefault();
+
+}
+
+function drop(event){
+
+event.preventDefault();
+
+let dropIndex = event.target.dataset.index;
+
+let temp = notes[dragIndex];
+
+notes.splice(dragIndex,1);
+
+notes.splice(dropIndex,0,temp);
+
+localStorage.setItem("notes",JSON.stringify(notes));
+
+displayNotes();
+
+}

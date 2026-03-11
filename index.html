@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <meta charset="UTF-8">
 <title>Notes App</title>
 <link rel="stylesheet" href="style.css">
@@ -16,7 +17,8 @@
 
 <textarea id="text" placeholder="Write your note"></textarea>
 <input type="file" id="imageInput" accept="image/*">
-
+<button onclick="exportPDF()">Download Notes PDF</button>
+<button onclick="startVoice()">🎤 Speak Note</button>
 <button onclick="addNote()">Add Note</button>
 <select id="color">
 <option value="white">White</option>

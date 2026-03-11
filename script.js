@@ -170,5 +170,43 @@ displayNotes();
 function toggleDark(){
 document.body.classList.toggle("dark");
 }
+function exportPDF(){
+
+const { jsPDF } = window.jspdf;
+
+let doc = new jsPDF();
+
+let y = 10;
+
+notes.forEach((note,index)=>{
+
+doc.text("Title: " + note.title,10,y);
+y += 8;
+
+doc.text("Note: " + note.text,10,y);
+y += 12;
+
+});
+
+doc.save("MyNotes.pdf");
+
+}
+function startVoice(){
+
+let recognition = new webkitSpeechRecognition();
+
+recognition.lang = "en-US";
+
+recognition.onresult = function(event){
+
+let speechText = event.results[0][0].transcript;
+
+document.getElementById("text").value = speechText;
+
+}
+
+recognition.start();
+
+}
 
 displayNotes();

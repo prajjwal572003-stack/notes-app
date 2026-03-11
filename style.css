@@ -102,4 +102,20 @@ cursor:grabbing;
 margin-top:10px;
 border-radius:8px;
 max-width:100%;
+}.fab{
+position:fixed;
+bottom:20px;
+right:20px;
+width:60px;
+height:60px;
+border-radius:50%;
+font-size:30px;
+border:none;
+background:#ffcc00;
+cursor:pointer;
+box-shadow:0 4px 10px rgba(0,0,0,0.3);
+}
+
+.fab:hover{
+transform:scale(1.1);
 }

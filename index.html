@@ -1,23 +1,30 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
 <meta charset="UTF-8">
 <title>Notes App</title>
+
 <link rel="stylesheet" href="style.css">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
 </head>
-<button onclick="toggleDark()">🌙 Dark Mode</button>
+
 <body>
+
+<button onclick="toggleDark()">🌙 Dark Mode</button>
 
 <h1>📝 My Notes App</h1>
 
+<!-- Search -->
+<input type="text" id="search" placeholder="Search notes..." onkeyup="searchNotes()">
+
 <div class="input-box">
-    <input type="text" id="search" placeholder="Search notes..." onkeyup="searchNotes()">
-    <button class="fab" onclick="scrollToTop()">+</button>
-    <button onclick="backupNotes()">Backup Notes</button>
-<input type="file" id="restoreFile" onchange="restoreNotes()">
 
 <input type="text" id="title" placeholder="Note title">
+
 <select id="category">
 <option value="General">General</option>
 <option value="Work">Work</option>
@@ -25,33 +32,52 @@
 <option value="Ideas">Ideas</option>
 </select>
 
-
 <textarea id="text" placeholder="Write your note"></textarea>
+
 <input type="file" id="imageInput" accept="image/*">
-<button onclick="exportPDF()">Download Notes PDF</button>
-<button onclick="startVoice()">🎤 Speak Note</button>
-<button onclick="addNote()">Add Note</button>
+
 <select id="color">
 <option value="white">White</option>
 <option value="lightyellow">Yellow</option>
 <option value="lightblue">Blue</option>
 <option value="lightgreen">Green</option>
 </select>
+
+<input type="datetime-local" id="reminder">
+
 <select id="filter" onchange="filterNotes()">
 <option value="All">All</option>
 <option value="Work">Work</option>
 <option value="Study">Study</option>
 <option value="Ideas">Ideas</option>
 </select>
-<input type="datetime-local" id="reminder">
+
+<br><br>
+
+<button onclick="addNote()">Add Note</button>
+
+<button onclick="startVoice()">🎤 Speak Note</button>
+
+<button onclick="exportPDF()">Download Notes PDF</button>
+
+<button onclick="backupNotes()">Backup Notes</button>
+
+<input type="file" id="restoreFile" onchange="restoreNotes()">
 
 </div>
 
-<input type="text" id="search" placeholder="Search notes..." onkeyup="searchNotes()">
+<hr>
+
+<p id="noteCount"></p>
 
 <div id="notes"></div>
+
+<!-- Floating Button -->
+
+<button class="fab" onclick="scrollToTop()">+</button>
 
 <script src="script.js"></script>
 
 </body>
+
 </html>

@@ -36,6 +36,8 @@ document.getElementById("text").value="";
 
 function displayNotes(){
 
+notes.sort((a,b)=>b.pinned-a.pinned);
+
 let container=document.getElementById("notes");
 
 container.innerHTML="";
@@ -65,12 +67,15 @@ div.innerHTML=`
 <button onclick="togglePin(${index})">📌</button>
 <button onclick="editNote(${index})">Edit</button>
 <button onclick="deleteNote(${index})">Delete</button>
+<button onclick="shareNote(${index})">Share</button>
 
 `;
 
 container.appendChild(div);
 
 });
+
+document.getElementById("noteCount").innerText="Total Notes: "+notes.length;
 
 }
 
@@ -104,6 +109,57 @@ notes[index].pinned=!notes[index].pinned;
 
 saveNotes();
 displayNotes();
+
+}
+
+function shareNote(index){
+
+let text=notes[index].title+" - "+notes[index].text;
+
+navigator.clipboard.writeText(text);
+
+alert("Note copied to clipboard!");
+
+}
+
+function searchNotes(){
+
+let search=document.getElementById("search").value.toLowerCase();
+
+let filtered=notes.filter(note=>
+
+(note.title && note.title.toLowerCase().includes(search)) ||
+(note.text && note.text.toLowerCase().includes(search))
+
+);
+
+displayFilteredNotes(filtered);
+
+}
+
+function displayFilteredNotes(list){
+
+let container=document.getElementById("notes");
+
+container.innerHTML="";
+
+list.forEach((note)=>{
+
+let div=document.createElement("div");
+
+div.className="note";
+
+div.style.background=note.color || "#fff";
+
+div.innerHTML=`
+<h3>${note.title}</h3>
+<small>${note.category}</small>
+<p>${note.text}</p>
+`;
+
+container.appendChild(div);
+
+});
 
 }
 
@@ -142,6 +198,46 @@ displayNotes();
 
 }
 
+function backupNotes(){
+
+let data=JSON.stringify(notes);
+
+let blob=new Blob([data],{type:"application/json"});
+
+let url=URL.createObjectURL(blob);
+
+let a=document.createElement("a");
+
+a.href=url;
+
+a.download="notes-backup.json";
+
+a.click();
+
+}
+
+function restoreNotes(){
+
+let file=document.getElementById("restoreFile").files[0];
+
+if(!file) return;
+
+let reader=new FileReader();
+
+reader.onload=function(e){
+
+notes=JSON.parse(e.target.result);
+
+saveNotes();
+
+displayNotes();
+
+};
+
+reader.readAsText(file);
+
+}
+
 if(Notification.permission!=="granted"){
 Notification.requestPermission();
 }
@@ -168,45 +264,6 @@ saveNotes();
 
 }
 
-});
-
-}
-function searchNotes(){
-
-let search=document.getElementById("search").value.toLowerCase();
-
-let filtered=notes.filter(note =>
-
-(note.title && note.title.toLowerCase().includes(search)) ||
-(note.text && note.text.toLowerCase().includes(search))
-
-);
-
-displayFilteredNotes(filtered);
-
-}
-
-function displayFilteredNotes(list){
-
-let container=document.getElementById("notes");
-
-container.innerHTML="";
-
-list.forEach((note,index)=>{
-
-let div=document.createElement("div");
-
-div.className="note";
-
-div.style.background=note.color || "#fff";
-
-div.innerHTML=`
-<h3>${note.title}</h3>
-<small>${note.category}</small>
-<p>${note.text}</p>
-`;
-
-container.appendChild(div);
 });
 
 }

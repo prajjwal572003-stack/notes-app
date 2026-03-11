@@ -98,3 +98,8 @@ cursor:grab;
 .note:active{
 cursor:grabbing;
 }
+.note img{
+margin-top:10px;
+border-radius:8px;
+max-width:100%;
+}

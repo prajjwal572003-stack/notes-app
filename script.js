@@ -30,37 +30,63 @@ div.addEventListener("drop",dropNote);
 div.innerHTML = `
 <h3>${note.title}</h3>
 <p>${note.text}</p>
+${note.image ? `<img src="${note.image}" width="100%">` : ""}
 
 <button onclick="togglePin(${index})">📌</button>
 <button onclick="editNote(${index})">Edit</button>
 <button onclick="deleteNote(${index})">Delete</button>
 `;
-
 notesDiv.appendChild(div);
 
 });
 }
-
 function addNote(){
 
 let title = document.getElementById("title").value;
 let text = document.getElementById("text").value;
 let color = document.getElementById("color").value;
+let imageInput = document.getElementById("imageInput");
 
-if(title === "" && text === "") return;
+let imageData = "";
+
+if(imageInput.files[0]){
+
+let reader = new FileReader();
+
+reader.onload = function(e){
+
+imageData = e.target.result;
 
 notes.push({
 title:title,
 text:text,
 color:color,
+image:imageData,
 pinned:false
 });
 
 saveNotes();
 displayNotes();
 
-document.getElementById("title").value="";
-document.getElementById("text").value="";
+}
+
+reader.readAsDataURL(imageInput.files[0]);
+
+}
+else{
+
+notes.push({
+title:title,
+text:text,
+color:color,
+image:"",
+pinned:false
+});
+
+saveNotes();
+displayNotes();
+
+}
 
 }
 

@@ -14,6 +14,13 @@
 <div class="input-box">
 
 <input type="text" id="title" placeholder="Note title">
+<select id="category">
+<option value="General">General</option>
+<option value="Work">Work</option>
+<option value="Study">Study</option>
+<option value="Ideas">Ideas</option>
+</select>
+
 
 <textarea id="text" placeholder="Write your note"></textarea>
 <input type="file" id="imageInput" accept="image/*">
@@ -25,6 +32,12 @@
 <option value="lightyellow">Yellow</option>
 <option value="lightblue">Blue</option>
 <option value="lightgreen">Green</option>
+</select>
+<select id="filter" onchange="filterNotes()">
+<option value="All">All</option>
+<option value="Work">Work</option>
+<option value="Study">Study</option>
+<option value="Ideas">Ideas</option>
 </select>
 
 </div>

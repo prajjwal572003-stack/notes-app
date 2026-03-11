@@ -1,92 +1,67 @@
 let notes = JSON.parse(localStorage.getItem("notes")) || [];
 
-function saveNotes(){
-localStorage.setItem("notes", JSON.stringify(notes));
+displayNotes();
+
+function addNote(){
+
+let title=document.getElementById("title").value;
+let text=document.getElementById("text").value;
+let color=document.getElementById("color").value;
+let category=document.getElementById("category").value;
+
+notes.push({
+title:title,
+text:text,
+color:color,
+category:category,
+pinned:false
+});
+
+saveNotes();
+displayNotes();
+
+document.getElementById("title").value="";
+document.getElementById("text").value="";
+
 }
 
-function displayNotes(list = notes){
+function displayNotes(){
 
-let notesDiv = document.getElementById("notes");
-notesDiv.innerHTML="";
+let container=document.getElementById("notes");
 
-list.forEach((note,index)=>{
+container.innerHTML="";
 
-let div = document.createElement("div");
+notes.forEach((note,index)=>{
+
+let div=document.createElement("div");
+
 div.className="note";
 
-if(note.pinned){
-div.classList.add("pinned");
-}
-
-div.style.background = note.color;
+div.style.background=note.color || "#fff";
 
 div.setAttribute("draggable","true");
-div.setAttribute("data-index",index);
+
+div.dataset.index=index;
 
 div.addEventListener("dragstart",dragStart);
 div.addEventListener("dragover",dragOver);
 div.addEventListener("drop",dropNote);
 
-div.innerHTML = `
+div.innerHTML=`
+
 <h3>${note.title}</h3>
+<small>${note.category || "General"}</small>
 <p>${note.text}</p>
-${note.image ? `<img src="${note.image}" width="100%">` : ""}
 
 <button onclick="togglePin(${index})">📌</button>
 <button onclick="editNote(${index})">Edit</button>
 <button onclick="deleteNote(${index})">Delete</button>
+
 `;
-notesDiv.appendChild(div);
+
+container.appendChild(div);
 
 });
-}
-function addNote(){
-
-let title = document.getElementById("title").value;
-let text = document.getElementById("text").value;
-let color = document.getElementById("color").value;
-let imageInput = document.getElementById("imageInput");
-
-let imageData = "";
-
-if(imageInput.files[0]){
-
-let reader = new FileReader();
-
-reader.onload = function(e){
-
-imageData = e.target.result;
-
-notes.push({
-title:title,
-text:text,
-color:color,
-image:imageData,
-pinned:false
-});
-
-saveNotes();
-displayNotes();
-
-}
-
-reader.readAsDataURL(imageInput.files[0]);
-
-}
-else{
-
-notes.push({
-title:title,
-text:text,
-color:color,
-image:"",
-pinned:false
-});
-
-saveNotes();
-displayNotes();
-
-}
 
 }
 
@@ -101,11 +76,11 @@ displayNotes();
 
 function editNote(index){
 
-let newText = prompt("Edit note",notes[index].text);
+let newText=prompt("Edit note:",notes[index].text);
 
-if(newText !== null){
+if(newText!==null){
 
-notes[index].text = newText;
+notes[index].text=newText;
 
 saveNotes();
 displayNotes();
@@ -116,48 +91,44 @@ displayNotes();
 
 function togglePin(index){
 
-notes[index].pinned = !notes[index].pinned;
-
-notes.sort((a,b)=>b.pinned - a.pinned);
+notes[index].pinned=!notes[index].pinned;
 
 saveNotes();
 displayNotes();
 
 }
 
-function searchNotes(){
+function saveNotes(){
 
-let search = document.getElementById("search").value.toLowerCase();
-
-let filtered = notes.filter(note =>
-note.title.toLowerCase().includes(search) ||
-note.text.toLowerCase().includes(search)
-);
-
-displayNotes(filtered);
+localStorage.setItem("notes",JSON.stringify(notes));
 
 }
 
-let draggedIndex = null;
+let draggedIndex=null;
 
 function dragStart(e){
-draggedIndex = e.target.closest(".note").dataset.index;
+
+draggedIndex=e.target.closest(".note").dataset.index;
+
 }
+
 function dragOver(e){
+
 e.preventDefault();
+
 }
 
 function dropNote(e){
 
 e.preventDefault();
 
-let target = e.target.closest(".note");
+let target=e.target.closest(".note");
 
 if(!target) return;
 
-let targetIndex = target.dataset.index;
+let targetIndex=target.dataset.index;
 
-let temp = notes[draggedIndex];
+let temp=notes[draggedIndex];
 
 notes.splice(draggedIndex,1);
 
@@ -167,46 +138,3 @@ saveNotes();
 displayNotes();
 
 }
-function toggleDark(){
-document.body.classList.toggle("dark");
-}
-function exportPDF(){
-
-const { jsPDF } = window.jspdf;
-
-let doc = new jsPDF();
-
-let y = 10;
-
-notes.forEach((note,index)=>{
-
-doc.text("Title: " + note.title,10,y);
-y += 8;
-
-doc.text("Note: " + note.text,10,y);
-y += 12;
-
-});
-
-doc.save("MyNotes.pdf");
-
-}
-function startVoice(){
-
-let recognition = new webkitSpeechRecognition();
-
-recognition.lang = "en-US";
-
-recognition.onresult = function(event){
-
-let speechText = event.results[0][0].transcript;
-
-document.getElementById("text").value = speechText;
-
-}
-
-recognition.start();
-
-}
-
-displayNotes();

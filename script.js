@@ -1,6 +1,14 @@
-let notes = JSON.parse(localStorage.getItem("notes")) || [];
+let notes = [];
+
+if(localStorage.getItem("notes")){
+notes = JSON.parse(localStorage.getItem("notes"));
+}
 
 displayNotes();
+
+function saveNotes(){
+localStorage.setItem("notes", JSON.stringify(notes));
+}
 
 function addNote(){
 
@@ -15,8 +23,8 @@ title:title,
 text:text,
 color:color,
 category:category,
+reminder:reminder,
 pinned:false
-reminder:reminder
 });
 
 saveNotes();
@@ -24,7 +32,6 @@ displayNotes();
 
 document.getElementById("title").value="";
 document.getElementById("text").value="";
-
 }
 
 function displayNotes(){
@@ -100,12 +107,6 @@ displayNotes();
 
 }
 
-function saveNotes(){
-
-localStorage.setItem("notes",JSON.stringify(notes));
-
-}
-
 let draggedIndex=null;
 
 function dragStart(e){
@@ -136,6 +137,14 @@ notes.splice(draggedIndex,1);
 
 notes.splice(targetIndex,0,temp);
 
+saveNotes();
+displayNotes();
+
+}
+
+if(Notification.permission!=="granted"){
+Notification.requestPermission();
+}
 
 function checkReminders(){
 
@@ -162,6 +171,5 @@ saveNotes();
 });
 
 }
-displayNotes();
 
-}
+setInterval(checkReminders,10000);

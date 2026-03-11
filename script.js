@@ -13,7 +13,7 @@ let color = document.getElementById("color").value;
 let reminder = document.getElementById("reminder").value;
 
 if(title === "" && text === ""){
-alert("Write something first!");
+alert("Write something!");
 return;
 }
 
@@ -22,7 +22,8 @@ title,
 text,
 category,
 color,
-reminder
+reminder,
+pinned:false
 };
 
 notes.push(note);
@@ -44,6 +45,8 @@ function displayNotes(){
 let notesDiv = document.getElementById("notes");
 notesDiv.innerHTML="";
 
+notes.sort((a,b)=>b.pinned-a.pinned);
+
 notes.forEach((note,index)=>{
 
 let div = document.createElement("div");
@@ -63,7 +66,9 @@ div.innerHTML = `
 <p>${note.text}</p>
 <small>${note.category}</small>
 <br>
-<button onclick="deleteNote(${index})">Delete</button>
+<button onclick="pinNote(${index})">📌</button>
+<button onclick="editNote(${index})">✏️</button>
+<button onclick="deleteNote(${index})">🗑</button>
 `;
 
 notesDiv.appendChild(div);
@@ -91,15 +96,47 @@ displayNotes();
 }
 
 
+/* EDIT NOTE */
+
+function editNote(index){
+
+let newTitle = prompt("Edit title",notes[index].title);
+let newText = prompt("Edit text",notes[index].text);
+
+if(newTitle !== null && newText !== null){
+
+notes[index].title = newTitle;
+notes[index].text = newText;
+
+localStorage.setItem("notes",JSON.stringify(notes));
+
+displayNotes();
+
+}
+
+}
+
+
+/* PIN NOTE */
+
+function pinNote(index){
+
+notes[index].pinned = !notes[index].pinned;
+
+localStorage.setItem("notes",JSON.stringify(notes));
+
+displayNotes();
+
+}
+
+
 /* SEARCH */
 
 function searchNotes(){
 
 let search = document.getElementById("search").value.toLowerCase();
 
-let notesDiv = document.getElementById("notes");
-
-let allNotes = notesDiv.getElementsByClassName("note");
+let allNotes = document.getElementsByClassName("note");
 
 for(let i=0;i<allNotes.length;i++){
 
@@ -123,6 +160,7 @@ function filterNotes(){
 let filter = document.getElementById("filter").value;
 
 let notesDiv = document.getElementById("notes");
+
 notesDiv.innerHTML="";
 
 notes.forEach((note,index)=>{
@@ -139,7 +177,9 @@ div.innerHTML = `
 <p>${note.text}</p>
 <small>${note.category}</small>
 <br>
-<button onclick="deleteNote(${index})">Delete</button>
+<button onclick="pinNote(${index})">📌</button>
+<button onclick="editNote(${index})">✏️</button>
+<button onclick="deleteNote(${index})">🗑</button>
 `;
 
 notesDiv.appendChild(div);
@@ -192,7 +232,6 @@ let url = URL.createObjectURL(blob);
 let a = document.createElement("a");
 
 a.href = url;
-
 a.download = "notes-backup.json";
 
 a.click();

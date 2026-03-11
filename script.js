@@ -171,5 +171,45 @@ saveNotes();
 });
 
 }
+function searchNotes(){
+
+let search=document.getElementById("search").value.toLowerCase();
+
+let filtered=notes.filter(note =>
+
+(note.title && note.title.toLowerCase().includes(search)) ||
+(note.text && note.text.toLowerCase().includes(search))
+
+);
+
+displayFilteredNotes(filtered);
+
+}
+
+function displayFilteredNotes(list){
+
+let container=document.getElementById("notes");
+
+container.innerHTML="";
+
+list.forEach((note,index)=>{
+
+let div=document.createElement("div");
+
+div.className="note";
+
+div.style.background=note.color || "#fff";
+
+div.innerHTML=`
+<h3>${note.title}</h3>
+<small>${note.category}</small>
+<p>${note.text}</p>
+`;
+
+container.appendChild(div);
+
+});
+
+}
 
 setInterval(checkReminders,10000);

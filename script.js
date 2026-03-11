@@ -8,6 +8,7 @@ let title=document.getElementById("title").value;
 let text=document.getElementById("text").value;
 let color=document.getElementById("color").value;
 let category=document.getElementById("category").value;
+let reminder=document.getElementById("reminder").value;
 
 notes.push({
 title:title,
@@ -15,6 +16,7 @@ text:text,
 color:color,
 category:category,
 pinned:false
+reminder:reminder
 });
 
 saveNotes();
@@ -134,7 +136,32 @@ notes.splice(draggedIndex,1);
 
 notes.splice(targetIndex,0,temp);
 
+
+function checkReminders(){
+
+let now=new Date().getTime();
+
+notes.forEach(note=>{
+
+if(note.reminder){
+
+let reminderTime=new Date(note.reminder).getTime();
+
+if(reminderTime<=now){
+
+new Notification("Reminder: "+note.title);
+
+note.reminder="";
+
 saveNotes();
+
+}
+
+}
+
+});
+
+}
 displayNotes();
 
 }
